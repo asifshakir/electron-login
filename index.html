@@ -1,0 +1,90 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login App</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      width: 200px;
+    }
+    input, button {
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <form id="loginForm">
+    <label for="username">Username:</label>
+    <input type="text" id="username" required />
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" required />
+
+    <label for="macAddress">MAC Address:</label>
+    <input type="text" id="macAddress" readonly />
+
+    <button type="submit">Login</button>
+  </form>
+  <script>
+    const { networkInterfaces } = require('os');
+
+    function getMacAddress() {
+      const interfaces = networkInterfaces();
+      for (const key in interfaces) {
+        for (const details of interfaces[key]) {
+          if (details.family === 'IPv4' && !details.internal) {
+            return details.mac;
+          }
+        }
+      }
+      return '';
+    }
+
+    function submitForm(event) {
+      event.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const macAddress = document.getElementById('macAddress').value;
+
+      // Replace with your API endpoint
+      const apiEndpoint = 'https://your-api-endpoint/login';
+
+      fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          password,
+          macAddress,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Success:', data);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
+
+    document.getElementById('macAddress').value = getMacAddress();
+
+const loginForm = document.getElementById('loginForm');
+loginForm.addEventListener('submit', submitForm);
+</script>
+</body>
+</html>
